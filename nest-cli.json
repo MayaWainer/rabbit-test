@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/rabbit-test/src",
+  "monorepo": true,
+  "root": "apps/rabbit-test",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/rabbit-test/tsconfig.app.json"
+  },
+  "projects": {
+    "rabbit-test": {
+      "type": "application",
+      "root": "apps/rabbit-test",
+      "entryFile": "main",
+      "sourceRoot": "apps/rabbit-test/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/rabbit-test/tsconfig.app.json"
+      }
+    },
+    "worker": {
+      "type": "application",
+      "root": "apps/worker",
+      "entryFile": "main",
+      "sourceRoot": "apps/worker/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/worker/tsconfig.app.json"
+      }
+    },
+    "billing-microservice": {
+      "type": "application",
+      "root": "apps/billing-microservice",
+      "entryFile": "main",
+      "sourceRoot": "apps/billing-microservice/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/billing-microservice/tsconfig.app.json"
+      }
+    }
+  }
+}

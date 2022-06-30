@@ -1,0 +1,83 @@
+version: '3'
+services:
+  redis:
+    image: 'redis:alpine'
+    ports:
+      - '6379:6379'
+    command: redis-server
+    networks:
+      - rabbit-test
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+#    volumes:
+#      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+#      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - rabbit-test
+  rabbit-test:
+    build:
+      context: '.'
+      dockerfile: './Dockerfile'
+      args:
+        SERVICE: 'rabbit-test'
+        Port: 80
+    restart: 'unless-stopped'
+    ports:
+      - '80:80'
+    volumes:
+      - .:/app
+    command: sh -c "npm run start:dev"
+    env_file:
+      - '.env'
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - rabbit-test
+  worker:
+    build:
+      context: '.'
+      dockerfile: './Dockerfile'
+      args:
+        SERVICE: 'worker'
+        Port: 81
+    restart: 'unless-stopped'
+    ports:
+      - '81:81'
+    volumes:
+      - .:/app
+    command: sh -c "npm run start:dev worker"
+    env_file:
+      - '.env'
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - rabbit-test
+  billing-microservice:
+    build:
+      context: '.'
+      dockerfile: './Dockerfile'
+      args:
+        SERVICE: 'billing-microservice'
+        Port: 82
+    restart: 'unless-stopped'
+    ports:
+      - '82:82'
+    volumes:
+      - .:/app
+    command: sh -c "npm run start:dev billing-microservice"
+    env_file:
+      - '.env'
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - rabbit-test
+networks:
+  rabbit-test:
+    driver: bridge
